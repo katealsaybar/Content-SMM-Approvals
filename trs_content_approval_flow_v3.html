@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: transparent; padding: 16px; }
+  h2.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  .chart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+  .node {
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    min-width: 180px;
+    max-width: 220px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+  }
+  .node:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 0 0 3px rgba(153,246,228,0.45);
+  }
+  .node .sub { font-size: 10px; font-weight: 400; opacity: 0.85; margin-top: 3px; }
+  .node .channel { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; margin-top: 4px; color: inherit; opacity: 0.7; text-transform: uppercase; }
+
+  /* TRS Brand Palette */
+  .node-start    { background: #2D2E37; color: #F5F3EE; }
+  .node-auto     { background: #99F6E4; color: #2D2E37; }
+  .node-decision { background: #F5F3EE; color: #2D2E37; border: 2px solid #2D2E37; border-radius: 8px; font-size: 12px; }
+  .node-approve  { background: #2D2E37; color: #99F6E4; }
+  .node-approve-emma { background: #EEF3C7; color: #2D2E37; }
+  .node-revise   { background: #FF9B9B; color: #2D2E37; }
+  .node-buffer   { background: #C4B5FD; color: #2D2E37; }
+  .node-buffer-q { background: #E8E2FD; color: #3D2B7A; }
+  .node-published { background: #2D2E37; color: #99F6E4; }
+  .node-timeout  { background: #FFE8E8; color: #7A1A1A; border: 2px dashed #FF9B9B; border-radius: 8px; font-size: 11px; }
+  .node-notify   { background: #EEF3C7; color: #2D2E37; font-size: 11px; border-radius: 8px; }
+
+  .arrow { display: flex; flex-direction: column; align-items: center; }
+  .arrow-line { width: 2px; height: 20px; background: #C8B8AC; }
+  .arrow-head { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #C8B8AC; }
+  .arrow-label { font-size: 10px; color: #6B5E52; font-weight: 600; background: #F5F3EE; padding: 1px 6px; border-radius: 4px; margin: 2px 0; }
+
+  .col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+  .divider { width: 90%; height: 1px; background: #E2D9CF; margin: 8px 0; }
+
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #6B5E52; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  .section-label { font-family: 'Playfair Display', serif; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #B0A094; text-transform: uppercase; margin-bottom: 4px; }
+
+  .tag-wa  { display: inline-block; background: #C7EFD9; color: #0D4A23; border-radius: 4px; font-size: 8px; font-weight: 700; padding: 1px 5px; margin: 1px; }
+  .tag-gm  { display: inline-block; background: #FEF3C7; color: #78350F; border-radius: 4px; font-size: 8px; font-weight: 700; padding: 1px 5px; margin: 1px; }
+</style>
+</head>
+<body>
+<h2 class="sr-only">TRS Content Approval Flow v2 — decision tree showing how content moves from Jules to Buffer/published, with all notification recipients and channels.</h2>
+
+<div class="chart">
+
+  <!-- START -->
+  <div class="section-label">Jules creates content</div>
+  <div class="node node-start">
+    ✏️ Jules ticks<br>"Content Ready for Checking"
+    <div class="sub">in Notion</div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- AUTO NOTIFY -->
+  <div class="node node-auto">
+    📩 Everyone gets notified
+    <div class="sub">Tara · Emma · Jules · Kate</div>
+    <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+  </div>
+
+  <div class="arrow"><div class="arrow-line" style="height:24px"></div><div class="arrow-head"></div></div>
+
+  <!-- DECISION: WHO REPLIES? -->
+  <div class="node node-decision" style="min-width:200px">
+    💬 Who replies?
+  </div>
+
+  <!-- T-JUNCTION CONNECTOR -->
+  <!-- vertical drop from Who replies -->
+  <div style="width:2px; height:16px; background:#C8B8AC;"></div>
+  <!-- horizontal bar spanning both columns (274px = half of each column + gap) -->
+  <div style="width:274px; height:2px; background:#C8B8AC;"></div>
+  <!-- two vertical drops to each branch -->
+  <div style="display:flex; width:274px; justify-content:space-between;">
+    <div style="width:2px; height:16px; background:#C8B8AC;"></div>
+    <div style="width:2px; height:16px; background:#C8B8AC;"></div>
+  </div>
+
+  <!-- BRANCHES -->
+  <div style="display:flex; align-items:flex-start; gap:24px; margin-top:0; justify-content:center;">
+
+    <!-- TARA -->
+    <div class="col">
+      <div style="height:0px; width:2px; background:#C8B8AC;"></div>
+      <div class="section-label">TARA replies</div>
+      <div class="node node-decision" style="min-width:140px; font-size:11px;">Approval or Revision?</div>
+      <div style="display:flex; gap:10px; margin-top:0;">
+        <div class="col">
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-label">✅ Approves</div><div class="arrow-head"></div></div>
+          <div class="node node-approve" style="min-width:120px; font-size:11px;">
+            Tara Approval ✅
+            <div class="sub">CONFIRMED publish</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-buffer" style="min-width:120px; font-size:11px;">
+            🚀 Buffer — LIVE
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-auto" style="min-width:120px; font-size:11px;">
+            📩 All notified
+            <div class="sub">Tara · Emma · Jules · Kate</div>
+            <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-published" style="min-width:120px; font-size:11px;">
+            ✅ Published<br>
+            <div class="sub">IG link → Notion</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-label">❌ Revision</div><div class="arrow-head"></div></div>
+          <div class="node node-revise" style="min-width:120px; font-size:11px;">
+            Status: Revision
+            <div class="sub">Tara · Emma · Jules · Kate</div>
+            <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-notify" style="min-width:120px; font-size:10px; padding:8px;">Jules creates new row<br><strong>"Revision #[n] of:<br>[original title + link]"</strong></div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-auto" style="min-width:120px; font-size:11px;">🔄 Full cycle repeats</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMMA -->
+    <div class="col">
+      <div style="height:0px; width:2px; background:#C8B8AC;"></div>
+      <div class="section-label">EMMA replies</div>
+      <div class="node node-decision" style="min-width:140px; font-size:11px;">Approval or Revision?</div>
+      <div style="display:flex; gap:10px; margin-top:0;">
+        <div class="col">
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-label">✅ Approves</div><div class="arrow-head"></div></div>
+          <div class="node node-approve-emma" style="min-width:120px; font-size:11px;">
+            Emma Approval ✅
+            <div class="sub">SCHEDULED only</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-buffer-q" style="min-width:120px; font-size:11px; border-radius:12px; padding:10px;">
+            🗓️ Buffer — QUEUED
+            <div class="sub">Tara can still override</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-auto" style="min-width:120px; font-size:11px;">
+            📩 All notified
+            <div class="sub">Tara · Emma · Jules · Kate</div>
+            <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-label" style="color:#5B4A8A; font-size:9px;">Tara overrides?</div><div class="arrow-head"></div></div>
+          <div class="node node-revise" style="min-width:120px; font-size:10px;">
+            Tara says revision
+            <div class="sub">Buffer cancelled → Jules · Kate</div>
+            <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-label">❌ Revision</div><div class="arrow-head"></div></div>
+          <div class="node node-revise" style="min-width:120px; font-size:11px;">
+            Status: Revision
+            <div class="sub">Tara · Emma · Jules · Kate</div>
+            <div><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-notify" style="min-width:120px; font-size:10px; padding:8px;">Jules creates new row<br><strong>"Revision #[n] of:<br>[original title + link]"</strong></div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="node node-auto" style="min-width:120px; font-size:11px;">🔄 Full cycle repeats</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TIMEOUT -->
+  <div style="margin-top:20px; width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div class="divider"></div>
+    <div class="section-label" style="margin-top:8px;">No reply scenario</div>
+    <div style="display:flex; gap:12px; align-items:flex-start; justify-content:center; flex-wrap:wrap;">
+      <div class="node node-timeout" style="min-width:130px; text-align:center;">
+        ⏰ 1hr<br>Auto-reminder<br>to Tara + Emma
+        <div style="margin-top:4px;"><span class="tag-wa">WhatsApp</span></div>
+      </div>
+      <div class="node node-timeout" style="min-width:130px; text-align:center;">
+        ⏰ 2hr<br>Second reminder<br>to Tara + Emma
+        <div style="margin-top:4px;"><span class="tag-wa">WhatsApp</span></div>
+      </div>
+      <div class="node node-timeout" style="min-width:150px; text-align:center;">
+        ⏰ 3hr — Third reminder<br>+ Kate & Jules notified<br>to chase manually
+        <div style="margin-top:4px;"><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+      </div>
+      <div class="node node-timeout" style="min-width:150px; text-align:center; border-color:#99F6E4; background:#E0FAF5; color:#1A5E4A;">
+        📅 24hr before publish<br>→ auto-approved<br>→ Buffer
+        <div class="sub" style="color:#1A5E4A;">All notified</div>
+        <div style="margin-top:4px;"><span class="tag-wa">WhatsApp</span><span class="tag-gm">Gmail</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#2D2E37;"></div> Tara approves = live</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EEF3C7; border:1px solid #C8B8AC;"></div> Emma approves = scheduled only</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FF9B9B;"></div> Revision</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#C4B5FD;"></div> Buffer (live)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#E8E2FD; border:1px solid #C4B5FD;"></div> Buffer (queued)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FFE8E8; border:1px dashed #FF9B9B;"></div> No reply / timeout</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#C7EFD9;"></div> <span class="tag-wa">WhatsApp</span> = Twilio</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FEF3C7;"></div> <span class="tag-gm">Gmail</span> = Email</div>
+  </div>
+
+</div>
+</body>
+</html>
